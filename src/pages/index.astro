@@ -1,0 +1,57 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SignedIn, SignedOut, UserButton, SignInButton, SignOutButton } from '@clerk/astro/components';
+import { format } from 'date-fns';
+import api from '../lib/clients';
+	
+const response = await api.posts.$get();
+const data = await response.json();
+if (!response.ok || !('posts' in data)) {
+  // console.error('Error fetching post:', data);
+  return Astro.redirect('/404');
+}
+const posts = data.posts;
+
+// const user = await Astro.locals.currentUser()
+
+---
+
+<Layout title="Collab-x minimalist blog">
+		<!-- <nav>
+		<SignedOut>
+			<SignInButton mode="modal"  fallbackRedirectUrl={'/'} forceRedirectUrl={'/'} signUpForceRedirectUrl={'/'}/>
+		</SignedOut>
+		<SignedIn>
+			<UserButton />
+			<SignOutButton />
+		</SignedIn>
+	</nav> -->
+  <h1 class="text-3xl font-bold mb-8">Latest Posts</h1>
+  <div class="space-y-6">
+    {posts.map(post => (
+      <article class="bg-white p-6 rounded-lg shadow-sm">
+        <h2 class="text-xl font-semibold mb-2">
+          <a href={`/blog/${post.slug}`} class="text-gray-800 hover:text-gray-600">
+            {post.title}
+          </a>
+        </h2>
+        <p class="text-gray-600 mb-3">{post.excerpt}</p>
+        <time class="text-sm text-gray-500">{format(post.date, 'MMMM d, yyyy')}</time>
+      </article>
+    ))}
+  </div>
+</Layout>
+ 
+
+
+<!-- <script>
+	import { hc } from 'hono/client';
+	import type { AppType } from '../lib';
+	// import api from '../lib/clients';
+		
+	const { api }= hc<AppType>('http://localhost:8000');
+		
+	const response = await api.posts.$get();
+	console.log(await response.json(), 'response')
+
+</script> -->
